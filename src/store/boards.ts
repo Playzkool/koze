@@ -204,6 +204,16 @@ export function updateTile(boardId: string, tileId: string, patch: Pick<Tile, 'l
   }
 }
 
+/** Applies a new tile order. Ids missing from `orderedIds` keep their place at the end. */
+export function reorderTiles(boardId: string, orderedIds: string[]) {
+  const board = boards[boardId];
+  if (!board) return;
+  const byId = new Map(board.tiles.map((t) => [t.id, t]));
+  const ordered = orderedIds.map((id) => byId.get(id)).filter((t): t is Tile => !!t);
+  const rest = board.tiles.filter((t) => !orderedIds.includes(t.id));
+  commit({ ...boards, [boardId]: { ...board, tiles: [...ordered, ...rest] } });
+}
+
 /** Moves a word tile to the end of another board. Categories are not movable (cycles, depth). */
 export function moveTile(fromBoardId: string, tileId: string, toBoardId: string) {
   if (fromBoardId === toBoardId) return;
