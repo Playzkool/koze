@@ -15,7 +15,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleLocalizations": ["fr"]
+        "CFBundleLocalizations": [
+          "fr"
+        ]
       }
     },
     "android": {
@@ -51,7 +53,8 @@
           "cameraPermission": "Kozé utilise l'appareil photo pour créer des pictogrammes personnalisés. Les photos restent sur cet appareil.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

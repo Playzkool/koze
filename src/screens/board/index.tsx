@@ -1,8 +1,10 @@
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import Animated, { useAnimatedRef } from 'react-native-reanimated';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Sortable from 'react-native-sortables';
 
 import { CaregiverToggle } from '@/components/caregiver-toggle';
 import { Icon } from '@/components/icon';
@@ -11,7 +13,7 @@ import { SentenceBar } from '@/components/sentence-bar';
 import { MinTouch, Radius, Spacing } from '@/constants/theme';
 import { ROOT_BOARD_ID } from '@/data/default-boards';
 import { useTheme } from '@/hooks/use-theme';
-import { canCreateCategory, type Tile, useBoard } from '@/store/boards';
+import { canCreateCategory, reorderTiles, type Tile, useBoard } from '@/store/boards';
 import { say } from '@/utils/speech';
 
 const GAP = Spacing.two;
@@ -27,6 +29,8 @@ export function BoardScreen() {
   const [path, setPath] = useState<string[]>([ROOT_BOARD_ID]);
   const [sentence, setSentence] = useState<Tile[]>([]);
   const [caregiver, setCaregiver] = useState(false);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const insets = useSafeAreaInsets();
 
   const current = useBoard(path[path.length - 1]);
   const root = useBoard(ROOT_BOARD_ID);
@@ -84,49 +88,87 @@ export function BoardScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.grid} contentInsetAdjustmentBehavior="automatic">
-        {board?.tiles.map((tile) => (
-          <PictoTile
-            key={tile.id}
-            tile={tile}
-            size={tileSize}
-            onPress={() => pressTile(tile)}
-            onEdit={
-              caregiver
-                ? () => router.push({ pathname: '/tile', params: { boardId, tileId: tile.id } })
-                : undefined
-            }
-          />
-        ))}
+      <Animated.ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic">
+        <Sortable.Grid
+          // Remount per board: switching categories stays instant, with no reorder animation.
+          key={boardId}
+          data={board?.tiles ?? []}
+          keyExtractor={(tile) => tile.id}
+          columns={columns}
+          rowGap={GAP}
+          columnGap={GAP}
+          // Reordering is a caregiver action: never drag by accident in user mode.
+          sortEnabled={caregiver}
+          dragActivationDelay={400}
+          hapticsEnabled
+          scrollableRef={scrollRef}
+          onDragEnd={({ data }) => reorderTiles(boardId, data.map((t) => t.id))}
+          renderItem={({ item: tile }) => (
+            <PictoTile
+              tile={tile}
+              size={tileSize}
+              onPress={() => pressTile(tile)}
+              onEdit={
+                caregiver
+                  ? () => router.push({ pathname: '/tile', params: { boardId, tileId: tile.id } })
+                  : undefined
+              }
+            />
+          )}
+        />
 
-        {/* Pressable + router.push rather than <Link asChild>: Link's Slot rejects style arrays. */}
         {caregiver && (
-          <Pressable
-            onPress={() => router.push({ pathname: '/tile', params: { boardId } })}
-            accessibilityRole="button"
-            accessibilityLabel="Ajouter un pictogramme"
-            style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
-            <Icon name="add" size={40} color={theme.accent} />
-            <Text style={[styles.addLabel, { color: theme.accent }]}>Pictogramme</Text>
-          </Pressable>
+          <Text style={[styles.reorderHint, { color: theme.textSecondary }]}>
+            Appui long sur une image pour la déplacer.
+          </Text>
         )}
 
-        {caregiver && canCreateCategory(boardId) && (
-          <Pressable
-            onPress={() => router.push({ pathname: '/tile', params: { boardId, category: '1' } })}
-            accessibilityRole="button"
-            accessibilityLabel="Nouvelle catégorie"
-            style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
-            <Icon name="folderAdd" size={40} color={theme.accent} />
-            <Text style={[styles.addLabel, { color: theme.accent }]}>Catégorie</Text>
-          </Pressable>
-        )}
-      </ScrollView>
+        {/* Add tiles stay outside the sortable grid: they always come last. */}
+        <View style={styles.addRow}>
+          {/* Pressable + router.push rather than <Link asChild>: Link's Slot rejects style arrays. */}
+          {caregiver && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/tile', params: { boardId } })}
+              accessibilityRole="button"
+              accessibilityLabel="Ajouter un pictogramme"
+              style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
+              <Icon name="add" size={40} color={theme.accent} />
+              <Text style={[styles.addLabel, { color: theme.accent }]}>Pictogramme</Text>
+            </Pressable>
+          )}
+
+          {caregiver && canCreateCategory(boardId) && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/tile', params: { boardId, category: '1' } })}
+              accessibilityRole="button"
+              accessibilityLabel="Nouvelle catégorie"
+              style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
+              <Icon name="folderAdd" size={40} color={theme.accent} />
+              <Text style={[styles.addLabel, { color: theme.accent }]}>Catégorie</Text>
+            </Pressable>
+          )}
+        </View>
+      </Animated.ScrollView>
 
       {caregiver && (
-        <View style={[styles.footer, { borderColor: theme.border }]}>
-          <Pressable onPress={() => router.push('/about')} accessibilityRole="link" hitSlop={12}>
-            <Text style={[styles.footerLink, { color: theme.textSecondary }]}>À propos · Crédits ARASAAC</Text>
+        <View
+          style={[
+            styles.footer,
+            { borderColor: theme.border, backgroundColor: theme.surface, paddingBottom: Spacing.three + insets.bottom },
+          ]}>
+          <Pressable
+            onPress={() => router.push('/about')}
+            accessibilityRole="button"
+            accessibilityLabel="Sauvegarde et infos"
+            style={({ pressed }) => [
+              styles.footerButton,
+              { borderColor: theme.accent, backgroundColor: theme.background, opacity: pressed ? 0.7 : 1 },
+            ]}>
+            <Icon name="share" size={22} color={theme.accent} />
+            <Text style={[styles.footerButtonText, { color: theme.accent }]}>Sauvegarde et infos</Text>
           </Pressable>
         </View>
       )}
@@ -152,13 +194,9 @@ const styles = StyleSheet.create({
   navText: { fontSize: 18, fontWeight: '600' },
   navRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
   title: { fontSize: 22, fontWeight: '700' },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: GAP,
-    padding: Spacing.three,
-    paddingBottom: Spacing.five,
-  },
+  content: { padding: Spacing.three, paddingBottom: Spacing.five },
+  reorderHint: { fontSize: 14, textAlign: 'center', marginTop: Spacing.three },
+  addRow: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, marginTop: Spacing.three },
   addTile: {
     borderRadius: Radius.tile,
     borderWidth: 2,
@@ -167,6 +205,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addLabel: { fontSize: 17, fontWeight: '600', marginTop: Spacing.two, textAlign: 'center' },
-  footer: { borderTopWidth: StyleSheet.hairlineWidth, padding: Spacing.three, alignItems: 'center' },
-  footerLink: { fontSize: 15 },
+  footer: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: Spacing.three, paddingHorizontal: Spacing.three },
+  footerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    minHeight: MinTouch - 8,
+    borderWidth: 2,
+    borderRadius: 28,
+  },
+  footerButtonText: { fontSize: 18, fontWeight: '700' },
 });

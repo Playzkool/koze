@@ -1,21 +1,106 @@
-import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Spacing } from '@/constants/theme';
+import { Icon, type IconName } from '@/components/icon';
+
+import { MinTouch, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { resetBoards } from '@/store/boards';
+import { applyBackup, BackupError, exportBackup, pickBackup } from '@/utils/backup';
 
 /** Required by LICENSE-APP-STORE-EXCEPTION (condition 2): keep this link in the app. */
 const SOURCE_URL = 'https://github.com/Playzkool/koze';
 
+function errorMessage(e: unknown) {
+  return e instanceof BackupError ? e.message : 'Une erreur inattendue est survenue.';
+}
+
+function plural(n: number, word: string) {
+  return `${n} ${word}${n > 1 ? 's' : ''}`;
+}
+
 export function About() {
   const theme = useTheme();
   const p = [styles.p, { color: theme.text }];
+  const [busy, setBusy] = useState<'export' | 'import' | null>(null);
+
+  async function onExport() {
+    setBusy('export');
+    try {
+      await exportBackup();
+    } catch (e) {
+      Alert.alert('Export impossible', errorMessage(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function onImport() {
+    setBusy('import');
+    try {
+      const backup = await pickBackup();
+      if (!backup) return;
+      const { categories, tiles, photos } = backup.stats;
+      const date = backup.exportedAt ? new Date(backup.exportedAt).toLocaleDateString('fr-FR') : null;
+      Alert.alert(
+        'Remplacer tous les tableaux ?',
+        [
+          date ? `Sauvegarde du ${date} :` : 'Cette sauvegarde contient :',
+          `${plural(tiles, 'pictogramme')}, ${plural(categories, 'catégorie')}, ${plural(photos, 'photo')}.`,
+          '',
+          'Les tableaux actuels et leurs photos seront remplacés. Exportez-les d’abord si vous voulez les garder.',
+        ].join('\n'),
+        [
+          { text: 'Annuler', style: 'cancel' },
+          {
+            text: 'Remplacer',
+            style: 'destructive',
+            onPress: () => {
+              try {
+                applyBackup(backup);
+                Alert.alert('Sauvegarde importée', 'Les tableaux ont été restaurés.');
+              } catch (e) {
+                Alert.alert('Import impossible', errorMessage(e));
+              }
+            },
+          },
+        ],
+      );
+    } catch (e) {
+      Alert.alert('Import impossible', errorMessage(e));
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <ScrollView
       style={{ backgroundColor: theme.background }}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic">
+      <Text style={[styles.h2First, { color: theme.text }]}>Sauvegarde</Text>
+      <Text style={p}>
+        Vos tableaux et vos photos existent uniquement sur ce téléphone. Exportez-les
+        régulièrement (Fichiers, Drive, e-mail…) pour ne rien perdre, ou pour les transmettre à un
+        autre appareil.
+      </Text>
+      <View style={styles.actions}>
+        <ActionButton
+          icon="share"
+          text="Exporter mes tableaux"
+          onPress={onExport}
+          busy={busy === 'export'}
+          disabled={busy !== null}
+        />
+        <ActionButton
+          icon="download"
+          text="Importer une sauvegarde"
+          onPress={onImport}
+          busy={busy === 'import'}
+          disabled={busy !== null}
+        />
+      </View>
+
       <Text style={[styles.h1, { color: theme.text }]}>Kozé</Text>
       <Text style={p}>
         Une application de communication par pictogrammes, gratuite pour tout le monde. Sans
@@ -57,9 +142,48 @@ export function About() {
   );
 }
 
+function ActionButton({
+  icon,
+  text,
+  onPress,
+  busy,
+  disabled,
+}: {
+  icon: IconName;
+  text: string;
+  onPress: () => void;
+  busy: boolean;
+  disabled: boolean;
+}) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ busy, disabled }}
+      style={[styles.action, { borderColor: theme.border, backgroundColor: theme.surface, opacity: disabled && !busy ? 0.5 : 1 }]}>
+      {busy ? <ActivityIndicator /> : <Icon name={icon} size={24} color={theme.accent} />}
+      <Text style={[styles.actionText, { color: theme.text }]}>{text}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   content: { padding: Spacing.four, gap: Spacing.three },
-  h1: { fontSize: 32, fontWeight: '800' },
+  h2First: { fontSize: 20, fontWeight: '700' },
+  actions: { gap: Spacing.two },
+  action: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    minHeight: MinTouch,
+    paddingHorizontal: Spacing.three,
+    borderWidth: 2,
+    borderRadius: 14,
+  },
+  actionText: { fontSize: 18, fontWeight: '600' },
+  h1: { fontSize: 32, fontWeight: '800', marginTop: Spacing.four },
   h2: { fontSize: 20, fontWeight: '700', marginTop: Spacing.three },
   p: { fontSize: 17, lineHeight: 25 },
   link: { fontSize: 17, fontWeight: '600' },
