@@ -1,81 +1,86 @@
-import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Icon } from '@/components/icon';
+import { TileImage } from '@/components/tile-image';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { pictoUrl } from '@/utils/arasaac';
+import type { Tile } from '@/store/boards';
 
 type Props = {
-  label: string;
-  pictoId: number;
+  tile: Tile;
   size: number;
-  isFolder?: boolean;
   onPress: () => void;
-  onLongPress?: () => void;
-  /** Visual cue that the tile can be removed (mode aidant). */
-  removable?: boolean;
+  /** Mode aidant: shows an edit badge on the tile. */
+  onEdit?: () => void;
 };
 
-export function PictoTile({ label, pictoId, size, isFolder, onPress, onLongPress, removable }: Props) {
+export function PictoTile({ tile, size, onPress, onEdit }: Props) {
   const theme = useTheme();
+  const isFolder = !!tile.boardId;
+  const isText = tile.image.kind === 'text';
 
   return (
-    <Pressable
-      onPress={onPress}
-      onLongPress={onLongPress}
-      accessibilityRole="button"
-      accessibilityLabel={isFolder ? `Dossier ${label}` : label}
-      accessibilityHint={removable ? 'Appui long pour supprimer' : undefined}
-      style={({ pressed }) => [
-        styles.tile,
-        {
-          width: size,
-          height: size + 28,
-          backgroundColor: isFolder ? theme.folder : theme.surface,
-          borderColor: removable ? theme.danger : theme.border,
-          borderStyle: removable ? 'dashed' : 'solid',
-          transform: [{ scale: pressed ? 0.96 : 1 }],
-        },
-      ]}>
-      <View style={styles.imageWrap}>
-        <Image
-          source={pictoUrl(pictoId)}
-          style={styles.image}
-          contentFit="contain"
-          cachePolicy="memory-disk"
-          transition={120}
-          accessible={false}
-        />
-      </View>
-      <Text numberOfLines={2} style={[styles.label, { color: theme.text }]}>
-        {label}
-      </Text>
-    </Pressable>
+    <View style={{ width: size, height: size + 28 }}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={isFolder ? `Catégorie ${tile.label}` : tile.label}
+        style={({ pressed }) => [
+          styles.tile,
+          {
+            backgroundColor: isFolder ? theme.folder : theme.surface,
+            borderColor: onEdit ? theme.accent : theme.border,
+            borderStyle: onEdit ? 'dashed' : 'solid',
+            transform: [{ scale: pressed ? 0.96 : 1 }],
+          },
+        ]}>
+        <TileImage image={tile.image} label={tile.label} radius={Radius.tile - 6} textSize={size / 5} />
+        {/* Text-only tiles already show the label in the box. */}
+        {!isText && (
+          <Text numberOfLines={2} style={[styles.label, { color: theme.text }]}>
+            {tile.label}
+          </Text>
+        )}
+      </Pressable>
+
+      {onEdit && (
+        <Pressable
+          onPress={onEdit}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={`Modifier ${tile.label}`}
+          style={[styles.editBadge, { backgroundColor: theme.accent }]}>
+          <Icon name="edit" size={20} color={theme.accentText} />
+        </Pressable>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
+    flex: 1,
     borderRadius: Radius.tile,
     borderWidth: 2,
     borderCurve: 'continuous',
     padding: Spacing.two,
     alignItems: 'center',
   },
-  imageWrap: {
-    flex: 1,
-    width: '100%',
-    // Pictograms are drawn on white; keep them readable in dark mode.
-    backgroundColor: '#FFFFFF',
-    borderRadius: Radius.tile - 6,
-    padding: Spacing.one,
-  },
-  image: { flex: 1 },
   label: {
     marginTop: Spacing.one,
     fontSize: 17,
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: Fonts?.rounded,
+  },
+  editBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

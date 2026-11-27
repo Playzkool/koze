@@ -1,11 +1,10 @@
-import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Icon } from '@/components/icon';
+import { TileImage } from '@/components/tile-image';
 import { MinTouch, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { Tile } from '@/store/boards';
-import { pictoUrl } from '@/utils/arasaac';
 
 type Props = {
   words: Tile[];
@@ -24,7 +23,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
         onPress={onSpeak}
         disabled={empty}
         accessibilityRole="button"
-        accessibilityLabel={empty ? 'Phrase vide' : `Dire : ${words.map((w) => w.label).join(' ')}`}
+        accessibilityLabel={empty ? 'Phrase vide' : `Dire : ${words.map((w) => w.speech || w.label).join(' ')}`}
         style={styles.sentence}>
         {empty ? (
           <Text numberOfLines={3} style={[styles.placeholder, { color: theme.textSecondary }]}>
@@ -34,7 +33,9 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.words}>
             {words.map((w, i) => (
               <View key={`${w.id}-${i}`} style={styles.word}>
-                <Image source={pictoUrl(w.pictoId)} style={styles.wordImage} contentFit="contain" />
+                <View style={styles.wordImage}>
+                  <TileImage image={w.image} label={w.label} radius={8} textSize={13} />
+                </View>
                 <Text numberOfLines={1} style={[styles.wordLabel, { color: theme.text }]}>
                   {w.label}
                 </Text>
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
   words: { alignItems: 'center', gap: Spacing.two, paddingHorizontal: Spacing.one },
   placeholder: { fontSize: 17, paddingHorizontal: Spacing.two },
   word: { alignItems: 'center', width: 68 },
-  wordImage: { width: 56, height: 56, backgroundColor: '#FFFFFF', borderRadius: 8 },
+  wordImage: { width: 56, height: 56 },
   wordLabel: { fontSize: 13, fontWeight: '600', marginTop: 2 },
   actions: { flexDirection: 'row', gap: Spacing.two },
   action: {

@@ -1,16 +1,17 @@
 import * as Haptics from 'expo-haptics';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CaregiverToggle } from '@/components/caregiver-toggle';
 import { Icon } from '@/components/icon';
 import { PictoTile } from '@/components/picto-tile';
 import { SentenceBar } from '@/components/sentence-bar';
 import { MinTouch, Radius, Spacing } from '@/constants/theme';
 import { ROOT_BOARD_ID } from '@/data/default-boards';
 import { useTheme } from '@/hooks/use-theme';
-import { removeTile, type Tile, useBoard } from '@/store/boards';
+import { canCreateCategory, type Tile, useBoard } from '@/store/boards';
 import { say } from '@/utils/speech';
 
 const GAP = Spacing.two;
@@ -27,8 +28,11 @@ export function BoardScreen() {
   const [sentence, setSentence] = useState<Tile[]>([]);
   const [caregiver, setCaregiver] = useState(false);
 
-  const boardId = path[path.length - 1];
-  const board = useBoard(boardId);
+  const current = useBoard(path[path.length - 1]);
+  const root = useBoard(ROOT_BOARD_ID);
+  // A category can disappear under us (e.g. reset from the About screen).
+  const board = current ?? root;
+  const boardId = board?.id ?? ROOT_BOARD_ID;
 
   const columns = width >= 900 ? 6 : width >= 600 ? 5 : 3;
   const tileSize = Math.floor((width - Spacing.three * 2 - GAP * (columns - 1)) / columns);
@@ -40,15 +44,7 @@ export function BoardScreen() {
       return;
     }
     setSentence((s) => [...s, tile]);
-    say(tile.label);
-  }
-
-  function longPressTile(tile: Tile) {
-    if (!caregiver) return;
-    Alert.alert('Supprimer ce pictogramme ?', tile.label, [
-      { text: 'Annuler', style: 'cancel' },
-      { text: 'Supprimer', style: 'destructive', onPress: () => removeTile(boardId, tile.id) },
-    ]);
+    say(tile.speech || tile.label);
   }
 
   return (
@@ -56,7 +52,7 @@ export function BoardScreen() {
       <View style={styles.header}>
         <SentenceBar
           words={sentence}
-          onSpeak={() => say(sentence.map((w) => w.label).join(' '))}
+          onSpeak={() => say(sentence.map((w) => w.speech || w.label).join(' '))}
           onBackspace={() => setSentence((s) => s.slice(0, -1))}
           onClear={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -84,29 +80,7 @@ export function BoardScreen() {
             {board?.title ?? ''}
           </Text>
 
-          <Pressable
-            // Long press guards against accidental entry by the user.
-            onLongPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-              setCaregiver((c) => !c);
-            }}
-            delayLongPress={1200}
-            accessibilityRole="button"
-            accessibilityLabel={caregiver ? 'Quitter le mode aidant' : 'Mode aidant'}
-            accessibilityHint="Appui long"
-            style={[
-              styles.navButton,
-              {
-                backgroundColor: caregiver ? theme.accent : theme.surface,
-                borderColor: theme.border,
-              },
-            ]}>
-            {caregiver ? (
-              <Text style={[styles.navText, { color: theme.accentText }]}>Terminé</Text>
-            ) : (
-              <Icon name="settings" size={24} color={theme.textSecondary} />
-            )}
-          </Pressable>
+          <CaregiverToggle active={caregiver} onChange={setCaregiver} />
         </View>
       </View>
 
@@ -114,34 +88,46 @@ export function BoardScreen() {
         {board?.tiles.map((tile) => (
           <PictoTile
             key={tile.id}
-            label={tile.label}
-            pictoId={tile.pictoId}
+            tile={tile}
             size={tileSize}
-            isFolder={!!tile.boardId}
-            removable={caregiver}
             onPress={() => pressTile(tile)}
-            onLongPress={() => longPressTile(tile)}
+            onEdit={
+              caregiver
+                ? () => router.push({ pathname: '/tile', params: { boardId, tileId: tile.id } })
+                : undefined
+            }
           />
         ))}
 
+        {/* Pressable + router.push rather than <Link asChild>: Link's Slot rejects style arrays. */}
         {caregiver && (
-          <Link href={{ pathname: '/add', params: { boardId } }} asChild>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Ajouter un pictogramme"
-              style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
-              <Icon name="add" size={40} color={theme.accent} />
-              <Text style={[styles.addLabel, { color: theme.accent }]}>Ajouter</Text>
-            </Pressable>
-          </Link>
+          <Pressable
+            onPress={() => router.push({ pathname: '/tile', params: { boardId } })}
+            accessibilityRole="button"
+            accessibilityLabel="Ajouter un pictogramme"
+            style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
+            <Icon name="add" size={40} color={theme.accent} />
+            <Text style={[styles.addLabel, { color: theme.accent }]}>Pictogramme</Text>
+          </Pressable>
+        )}
+
+        {caregiver && canCreateCategory(boardId) && (
+          <Pressable
+            onPress={() => router.push({ pathname: '/tile', params: { boardId, category: '1' } })}
+            accessibilityRole="button"
+            accessibilityLabel="Nouvelle catégorie"
+            style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
+            <Icon name="folderAdd" size={40} color={theme.accent} />
+            <Text style={[styles.addLabel, { color: theme.accent }]}>Catégorie</Text>
+          </Pressable>
         )}
       </ScrollView>
 
       {caregiver && (
         <View style={[styles.footer, { borderColor: theme.border }]}>
-          <Link href="/about" style={[styles.footerLink, { color: theme.textSecondary }]}>
-            À propos · Crédits ARASAAC
-          </Link>
+          <Pressable onPress={() => router.push('/about')} accessibilityRole="link" hitSlop={12}>
+            <Text style={[styles.footerLink, { color: theme.textSecondary }]}>À propos · Crédits ARASAAC</Text>
+          </Pressable>
         </View>
       )}
     </SafeAreaView>
@@ -150,7 +136,8 @@ export function BoardScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  header: { paddingHorizontal: Spacing.three, paddingTop: Spacing.two, gap: Spacing.two },
+  // zIndex: the caregiver hint bubble overflows onto the grid.
+  header: { paddingHorizontal: Spacing.three, paddingTop: Spacing.two, gap: Spacing.two, zIndex: 1 },
   nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   navButton: {
     minWidth: MinTouch,
@@ -179,7 +166,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addLabel: { fontSize: 17, fontWeight: '600' },
+  addLabel: { fontSize: 17, fontWeight: '600', marginTop: Spacing.two, textAlign: 'center' },
   footer: { borderTopWidth: StyleSheet.hairlineWidth, padding: Spacing.three, alignItems: 'center' },
   footerLink: { fontSize: 15 },
 });

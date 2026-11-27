@@ -1,14 +1,16 @@
-import type { Board } from '@/store/boards';
+import type { Board, Tile } from '@/store/boards';
 
 /**
  * Starter vocabulary. Picto ids come from ARASAAC (fr search, exact keyword match).
  * Kept deliberately small and adult-friendly; caregivers extend it in "mode aidant".
  */
-const word = (id: string, label: string, pictoId: number) => ({ id, label, pictoId });
-const folder = (id: string, label: string, pictoId: number, target: string) => ({
+const word = (id: string, label: string, pictoId: number): Tile => ({
   id,
   label,
-  pictoId,
+  image: { kind: 'arasaac', id: pictoId },
+});
+const folder = (id: string, label: string, pictoId: number, target: string): Tile => ({
+  ...word(id, label, pictoId),
   boardId: target,
 });
 
@@ -38,6 +40,7 @@ export const DEFAULT_BOARDS: Record<string, Board> = {
   },
   besoins: {
     id: 'besoins',
+    parentId: 'home',
     title: 'Besoins',
     tiles: [
       word('manger', 'manger', 6456),
@@ -53,6 +56,7 @@ export const DEFAULT_BOARDS: Record<string, Board> = {
   },
   emotions: {
     id: 'emotions',
+    parentId: 'home',
     title: 'Émotions',
     tiles: [
       word('content', 'content', 35547),
@@ -64,6 +68,7 @@ export const DEFAULT_BOARDS: Record<string, Board> = {
   },
   personnes: {
     id: 'personnes',
+    parentId: 'home',
     title: 'Personnes',
     tiles: [
       word('bonjour', 'bonjour', 6944),

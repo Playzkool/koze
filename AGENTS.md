@@ -48,6 +48,7 @@ Kozé is a free AAC (communication alternative et augmentée) app: pictogram boa
 - **Pictograms**: ARASAAC public API (`src/utils/arasaac.ts`), CC BY-NC-SA. Attribution must stay visible in the About screen. Never use them commercially.
 - **Accessibility first**: touch targets ≥ 64pt (`MinTouch`), high contrast, every pressable has `accessibilityLabel`. Board navigation is local state, not routes — instant, no animation.
 - **Language**: UI and default vocabulary in French.
+- **Navigation**: never wrap a component with a style array in `<Link asChild>` (Expo Router's Slot throws). Use `Pressable` + `router.push` instead.
 - **License**: code is GPL-3.0-only (`LICENSE`) + App Store additional permission (`LICENSE-APP-STORE-EXCEPTION`). Do not add dependencies whose license is incompatible with GPL-3.0. The exception requires the public source repo (https://github.com/Playzkool/koze) to stay linked from the About screen (`SOURCE_URL` in `src/screens/about.tsx`) and the store listings.
 
 ## EAS Build & Runtime Version
