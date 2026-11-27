@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Sortable from 'react-native-sortables';
 
 import { CaregiverToggle } from '@/components/caregiver-toggle';
@@ -30,6 +30,7 @@ export function BoardScreen() {
   const [sentence, setSentence] = useState<Tile[]>([]);
   const [caregiver, setCaregiver] = useState(false);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const insets = useSafeAreaInsets();
 
   const current = useBoard(path[path.length - 1]);
   const root = useBoard(ROOT_BOARD_ID);
@@ -153,9 +154,21 @@ export function BoardScreen() {
       </Animated.ScrollView>
 
       {caregiver && (
-        <View style={[styles.footer, { borderColor: theme.border }]}>
-          <Pressable onPress={() => router.push('/about')} accessibilityRole="link" hitSlop={12}>
-            <Text style={[styles.footerLink, { color: theme.textSecondary }]}>À propos · Crédits ARASAAC</Text>
+        <View
+          style={[
+            styles.footer,
+            { borderColor: theme.border, backgroundColor: theme.surface, paddingBottom: Spacing.three + insets.bottom },
+          ]}>
+          <Pressable
+            onPress={() => router.push('/about')}
+            accessibilityRole="button"
+            accessibilityLabel="Sauvegarde et infos"
+            style={({ pressed }) => [
+              styles.footerButton,
+              { borderColor: theme.accent, backgroundColor: theme.background, opacity: pressed ? 0.7 : 1 },
+            ]}>
+            <Icon name="share" size={22} color={theme.accent} />
+            <Text style={[styles.footerButtonText, { color: theme.accent }]}>Sauvegarde et infos</Text>
           </Pressable>
         </View>
       )}
@@ -192,6 +205,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addLabel: { fontSize: 17, fontWeight: '600', marginTop: Spacing.two, textAlign: 'center' },
-  footer: { borderTopWidth: StyleSheet.hairlineWidth, padding: Spacing.three, alignItems: 'center' },
-  footerLink: { fontSize: 15 },
+  footer: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: Spacing.three, paddingHorizontal: Spacing.three },
+  footerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    minHeight: MinTouch - 8,
+    borderWidth: 2,
+    borderRadius: 28,
+  },
+  footerButtonText: { fontSize: 18, fontWeight: '700' },
 });

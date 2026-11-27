@@ -1,6 +1,7 @@
 import Storage from 'expo-sqlite/kv-store';
 import { useSyncExternalStore } from 'react';
 
+import { MAX_DEPTH } from '@/constants/limits';
 import { DEFAULT_BOARDS, ROOT_BOARD_ID } from '@/data/default-boards';
 import { deleteAllPhotos, deletePhoto } from '@/utils/photo';
 
@@ -31,13 +32,9 @@ export type Board = {
   tiles: Tile[];
 };
 
-type Boards = Record<string, Board>;
+export type Boards = Record<string, Board>;
 
-export const LABEL_SOFT_LIMIT = 25;
-export const LABEL_MAX = 40;
-export const SPEECH_MAX = 150;
-/** Root is depth 1. Deeper trees get hard to navigate for users. */
-export const MAX_DEPTH = 3;
+export { LABEL_MAX, LABEL_SOFT_LIMIT, MAX_DEPTH, SPEECH_MAX } from '@/constants/limits';
 
 const STORAGE_KEY = 'koze.boards.v2';
 const LEGACY_KEY_V1 = 'koze.boards.v1';
@@ -245,6 +242,15 @@ export function removeTile(boardId: string, tileId: string) {
   }
   commit(next);
   orphanPhotos.forEach(deletePhoto);
+}
+
+export function getBoardsSnapshot(): Readonly<Boards> {
+  return boards;
+}
+
+/** Replaces every board at once. Callers must validate `next` first (see utils/backup). */
+export function replaceBoards(next: Boards) {
+  commit(next);
 }
 
 export function resetBoards() {

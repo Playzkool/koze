@@ -9,9 +9,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.root}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
+          {/* title: used as the back button label on pushed screens. */}
+          <Stack.Screen name="index" options={{ headerShown: false, title: 'Tableaux' }} />
           <Stack.Screen name="tile" options={{ presentation: 'modal', title: 'Pictogramme' }} />
-          <Stack.Screen name="about" options={{ title: 'À propos' }} />
+          <Stack.Screen name="about" options={{ title: 'Sauvegarde et infos' }} />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>

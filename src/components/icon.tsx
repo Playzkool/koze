@@ -12,6 +12,8 @@ const ICONS = {
   camera: { ios: 'camera.fill', android: 'photo_camera', web: 'photo_camera' },
   photos: { ios: 'photo.on.rectangle', android: 'photo_library', web: 'photo_library' },
   check: { ios: 'checkmark', android: 'check', web: 'check' },
+  share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  download: { ios: 'square.and.arrow.down', android: 'download', web: 'download' },
 } as const;
 
 export type IconName = keyof typeof ICONS;
