@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Icon } from '@/components/icon';
 import { MinTouch, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import type { Tile } from '@/store/boards';
@@ -25,22 +26,22 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
         accessibilityRole="button"
         accessibilityLabel={empty ? 'Phrase vide' : `Dire : ${words.map((w) => w.label).join(' ')}`}
         style={styles.sentence}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.words}>
-          {empty ? (
-            <Text style={[styles.placeholder, { color: theme.textSecondary }]}>
-              Touchez des images pour faire une phrase
-            </Text>
-          ) : (
-            words.map((w, i) => (
+        {empty ? (
+          <Text numberOfLines={3} style={[styles.placeholder, { color: theme.textSecondary }]}>
+            Touchez des images pour faire une phrase
+          </Text>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.words}>
+            {words.map((w, i) => (
               <View key={`${w.id}-${i}`} style={styles.word}>
                 <Image source={pictoUrl(w.pictoId)} style={styles.wordImage} contentFit="contain" />
                 <Text numberOfLines={1} style={[styles.wordLabel, { color: theme.text }]}>
                   {w.label}
                 </Text>
               </View>
-            ))
-          )}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        )}
       </Pressable>
 
       <View style={styles.actions}>
@@ -50,7 +51,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
           accessibilityRole="button"
           accessibilityLabel="Parler"
           style={[styles.action, { backgroundColor: theme.accent, opacity: empty ? 0.4 : 1 }]}>
-          <Text style={[styles.actionIcon, { color: theme.accentText }]}>🔊</Text>
+          <Icon name="speak" color={theme.accentText} />
         </Pressable>
         <Pressable
           onPress={onBackspace}
@@ -60,7 +61,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
           accessibilityLabel="Effacer le dernier mot"
           accessibilityHint="Appui long pour tout effacer"
           style={[styles.action, { borderColor: theme.border, borderWidth: 2, opacity: empty ? 0.4 : 1 }]}>
-          <Text style={[styles.actionIcon, { color: theme.text }]}>⌫</Text>
+          <Icon name="backspace" color={theme.text} />
         </Pressable>
       </View>
     </View>
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
   },
   sentence: { flex: 1, alignSelf: 'stretch', justifyContent: 'center' },
   words: { alignItems: 'center', gap: Spacing.two, paddingHorizontal: Spacing.one },
-  placeholder: { fontSize: 17 },
+  placeholder: { fontSize: 17, paddingHorizontal: Spacing.two },
   word: { alignItems: 'center', width: 68 },
   wordImage: { width: 56, height: 56, backgroundColor: '#FFFFFF', borderRadius: 8 },
   wordLabel: { fontSize: 13, fontWeight: '600', marginTop: 2 },
@@ -92,5 +93,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionIcon: { fontSize: 26 },
 });

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Icon } from '@/components/icon';
 import { PictoTile } from '@/components/picto-tile';
 import { SentenceBar } from '@/components/sentence-bar';
 import { MinTouch, Radius, Spacing } from '@/constants/theme';
@@ -70,7 +71,10 @@ export function BoardScreen() {
               accessibilityRole="button"
               accessibilityLabel="Retour"
               style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-              <Text style={[styles.navText, { color: theme.text }]}>‹ Retour</Text>
+              <View style={styles.navRow}>
+                <Icon name="back" size={20} color={theme.text} />
+                <Text style={[styles.navText, { color: theme.text }]}>Retour</Text>
+              </View>
             </Pressable>
           ) : (
             <View style={styles.navSpacer} />
@@ -97,9 +101,11 @@ export function BoardScreen() {
                 borderColor: theme.border,
               },
             ]}>
-            <Text style={[styles.navText, { color: caregiver ? theme.accentText : theme.textSecondary }]}>
-              {caregiver ? 'Terminé' : '⚙︎'}
-            </Text>
+            {caregiver ? (
+              <Text style={[styles.navText, { color: theme.accentText }]}>Terminé</Text>
+            ) : (
+              <Icon name="settings" size={24} color={theme.textSecondary} />
+            )}
           </Pressable>
         </View>
       </View>
@@ -124,7 +130,7 @@ export function BoardScreen() {
               accessibilityRole="button"
               accessibilityLabel="Ajouter un pictogramme"
               style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
-              <Text style={[styles.addPlus, { color: theme.accent }]}>＋</Text>
+              <Icon name="add" size={40} color={theme.accent} />
               <Text style={[styles.addLabel, { color: theme.accent }]}>Ajouter</Text>
             </Pressable>
           </Link>
@@ -157,6 +163,7 @@ const styles = StyleSheet.create({
   },
   navSpacer: { minWidth: MinTouch },
   navText: { fontSize: 18, fontWeight: '600' },
+  navRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
   title: { fontSize: 22, fontWeight: '700' },
   grid: {
     flexDirection: 'row',
@@ -172,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addPlus: { fontSize: 40, fontWeight: '300' },
   addLabel: { fontSize: 17, fontWeight: '600' },
   footer: { borderTopWidth: StyleSheet.hairlineWidth, padding: Spacing.three, alignItems: 'center' },
   footerLink: { fontSize: 15 },
