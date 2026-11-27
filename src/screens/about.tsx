@@ -4,6 +4,9 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { resetBoards } from '@/store/boards';
 
+/** Required by LICENSE-APP-STORE-EXCEPTION (condition 2): keep this link in the app. */
+const SOURCE_URL = 'https://github.com/Playzkool/koze';
+
 export function About() {
   const theme = useTheme();
   const p = [styles.p, { color: theme.text }];
@@ -27,6 +30,16 @@ export function About() {
       </Text>
       <Pressable onPress={() => Linking.openURL('https://arasaac.org')} accessibilityRole="link">
         <Text style={[styles.link, { color: theme.accent }]}>arasaac.org</Text>
+      </Pressable>
+
+      <Text style={[styles.h2, { color: theme.text }]}>Code source</Text>
+      <Text style={p}>
+        Kozé est un logiciel libre, distribué sous licence GNU GPL v3 avec une permission
+        additionnelle pour les stores d&apos;applications. Le code est consultable et modifiable
+        par tous.
+      </Text>
+      <Pressable onPress={() => Linking.openURL(SOURCE_URL)} accessibilityRole="link">
+        <Text style={[styles.link, { color: theme.accent }]}>github.com/Playzkool/koze</Text>
       </Pressable>
 
       <Text style={[styles.h2, { color: theme.text }]}>Réinitialiser</Text>

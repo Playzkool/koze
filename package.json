@@ -2,6 +2,7 @@
   "name": "koze",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "@expo/ui": "~57.0.26",
     "expo": "~57.0.34",
@@ -9,10 +10,13 @@
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-glass-effect": "~57.0.5",
+    "expo-haptics": "~57.0.3",
     "expo-image": "~57.0.5",
     "expo-linking": "~57.0.14",
     "expo-router": "~57.0.32",
+    "expo-speech": "~57.0.3",
     "expo-splash-screen": "~57.0.12",
+    "expo-sqlite": "~57.0.7",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
@@ -29,11 +33,12 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

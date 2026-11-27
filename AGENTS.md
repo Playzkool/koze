@@ -39,3 +39,19 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## Kozé — project rules
+
+Kozé is a free AAC (communication alternative et augmentée) app: pictogram boards + text-to-speech.
+
+- **Free forever, no backend**: no account, no ads, no analytics, no IAP. All user data stays on device (`expo-sqlite/kv-store`, see `src/store/boards.ts`).
+- **Pictograms**: ARASAAC public API (`src/utils/arasaac.ts`), CC BY-NC-SA. Attribution must stay visible in the About screen. Never use them commercially.
+- **Accessibility first**: touch targets ≥ 64pt (`MinTouch`), high contrast, every pressable has `accessibilityLabel`. Board navigation is local state, not routes — instant, no animation.
+- **Language**: UI and default vocabulary in French.
+- **License**: code is GPL-3.0-only (`LICENSE`) + App Store additional permission (`LICENSE-APP-STORE-EXCEPTION`). Do not add dependencies whose license is incompatible with GPL-3.0. The exception requires the public source repo (https://github.com/Playzkool/koze) to stay linked from the About screen (`SOURCE_URL` in `src/screens/about.tsx`) and the store listings.
+
+## EAS Build & Runtime Version
+
+`runtimeVersion` in `app.json` is a **fixed string** (e.g. `"1.0.0"`). Bump it only when a new native build is required (native module added/removed, SDK upgrade, native config plugin change). JS-only changes ship as OTA updates.
+
+The user runs EAS builds themselves. Never run `eas build` unless explicitly asked.
