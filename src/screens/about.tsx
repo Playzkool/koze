@@ -86,6 +86,7 @@ export function About() {
       </Text>
       <View style={styles.actions}>
         <ActionButton
+          testID="export-backup"
           icon="share"
           text="Exporter mes tableaux"
           onPress={onExport}
@@ -93,6 +94,7 @@ export function About() {
           disabled={busy !== null}
         />
         <ActionButton
+          testID="import-backup"
           icon="download"
           text="Importer une sauvegarde"
           onPress={onImport}
@@ -129,6 +131,7 @@ export function About() {
 
       <Text style={[styles.h2, { color: theme.text }]}>Réinitialiser</Text>
       <Pressable
+        testID="reset-boards"
         accessibilityRole="button"
         onPress={() =>
           Alert.alert('Revenir aux tableaux de départ ?', 'Les pictogrammes ajoutés seront supprimés.', [
@@ -143,12 +146,14 @@ export function About() {
 }
 
 function ActionButton({
+  testID,
   icon,
   text,
   onPress,
   busy,
   disabled,
 }: {
+  testID: string;
   icon: IconName;
   text: string;
   onPress: () => void;
@@ -160,6 +165,7 @@ function ActionButton({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      testID={testID}
       accessibilityRole="button"
       accessibilityState={{ busy, disabled }}
       style={[styles.action, { borderColor: theme.border, backgroundColor: theme.surface, opacity: disabled && !busy ? 0.5 : 1 }]}>

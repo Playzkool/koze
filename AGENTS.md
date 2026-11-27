@@ -56,3 +56,10 @@ Kozé is a free AAC (communication alternative et augmentée) app: pictogram boa
 `runtimeVersion` in `app.json` is a **fixed string** (e.g. `"1.0.0"`). Bump it only when a new native build is required (native module added/removed, SDK upgrade, native config plugin change). JS-only changes ship as OTA updates.
 
 The user runs EAS builds themselves. Never run `eas build` unless explicitly asked.
+
+## Tests
+
+- `npm run test:unit`: unit tests (`src/**/*.test.ts`, node:test via tsx). Keep tested modules free of React Native imports (see `src/utils/backup-format.ts`).
+- `npm run test:e2e`: Maestro flows in `.maestro/` against Expo Go; requires Metro running (see `.maestro/README.md`).
+- Run both after upgrading packages or the Expo SDK.
+- Interactive elements carry a `testID` used by the Maestro flows: keep them when refactoring, and add one to every new interactive element.

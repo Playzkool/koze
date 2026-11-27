@@ -51,6 +51,7 @@ export function PictoSearch({ selectedId, initialQuery = '', onSelect }: Props) 
       <TextInput
         value={query}
         onChangeText={setQuery}
+        testID="picto-search-input"
         placeholder="Chercher un pictogramme (ex : piscine)"
         placeholderTextColor={theme.textSecondary}
         autoCorrect={false}
@@ -77,6 +78,7 @@ export function PictoSearch({ selectedId, initialQuery = '', onSelect }: Props) 
               <Pressable
                 key={item.id}
                 onPress={() => onSelect(item)}
+                testID={`picto-result-${item.id}`}
                 accessibilityRole="button"
                 accessibilityLabel={item.label}
                 accessibilityState={{ selected: active }}

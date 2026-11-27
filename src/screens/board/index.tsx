@@ -68,6 +68,7 @@ export function BoardScreen() {
           {path.length > 1 ? (
             <Pressable
               onPress={() => setPath((p) => p.slice(0, -1))}
+              testID="board-back"
               accessibilityRole="button"
               accessibilityLabel="Retour"
               style={[styles.navButton, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -80,7 +81,7 @@ export function BoardScreen() {
             <View style={styles.navSpacer} />
           )}
 
-          <Text accessibilityRole="header" style={[styles.title, { color: theme.text }]}>
+          <Text testID="board-title" accessibilityRole="header" style={[styles.title, { color: theme.text }]}>
             {board?.title ?? ''}
           </Text>
 
@@ -132,6 +133,7 @@ export function BoardScreen() {
           {caregiver && (
             <Pressable
               onPress={() => router.push({ pathname: '/tile', params: { boardId } })}
+              testID="add-tile"
               accessibilityRole="button"
               accessibilityLabel="Ajouter un pictogramme"
               style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
@@ -143,6 +145,7 @@ export function BoardScreen() {
           {caregiver && canCreateCategory(boardId) && (
             <Pressable
               onPress={() => router.push({ pathname: '/tile', params: { boardId, category: '1' } })}
+              testID="add-category"
               accessibilityRole="button"
               accessibilityLabel="Nouvelle catégorie"
               style={[styles.addTile, { width: tileSize, height: tileSize + 28, borderColor: theme.accent }]}>
@@ -161,6 +164,7 @@ export function BoardScreen() {
           ]}>
           <Pressable
             onPress={() => router.push('/about')}
+            testID="open-settings"
             accessibilityRole="button"
             accessibilityLabel="Sauvegarde et infos"
             style={({ pressed }) => [

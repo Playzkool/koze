@@ -207,6 +207,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
           <TextInput
             value={label}
             onChangeText={setLabel}
+            testID="tile-label-input"
             maxLength={LABEL_MAX}
             placeholder={isCategory ? 'ex : Repas' : 'ex : Mal à la tête'}
             placeholderTextColor={theme.textSecondary}
@@ -230,6 +231,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
             <TextInput
               value={speech}
               onChangeText={setSpeech}
+              testID="tile-speech-input"
               maxLength={SPEECH_MAX}
               multiline
               placeholder="ex : J'ai mal à la tête, j'ai besoin d'un médicament."
@@ -267,6 +269,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
                 <Pressable
                   key={value}
                   onPress={() => chooseSource(value)}
+                  testID={`source-${value}`}
                   accessibilityRole="tab"
                   accessibilityState={{ selected: active }}
                   style={[styles.segment, active && { backgroundColor: theme.accent }]}>
@@ -308,6 +311,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
                 <Pressable
                   key={color}
                   onPress={() => setImage({ kind: 'text', color })}
+                  testID={`color-${TEXT_TILE_COLORS.indexOf(color)}`}
                   accessibilityRole="button"
                   accessibilityLabel={`Couleur ${TEXT_TILE_COLORS.indexOf(color) + 1}`}
                   accessibilityState={{ selected: active }}
@@ -324,6 +328,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
 
         <Pressable
           onPress={save}
+          testID="tile-save"
           disabled={!canSave}
           accessibilityRole="button"
           style={[styles.save, { backgroundColor: theme.accent, opacity: canSave ? 1 : 0.4 }]}>
@@ -331,7 +336,7 @@ export function TileEditor({ boardId, tileId, category = false }: Props) {
         </Pressable>
 
         {existing && (
-          <Pressable onPress={confirmDelete} accessibilityRole="button" style={styles.delete}>
+          <Pressable onPress={confirmDelete} testID="tile-delete" accessibilityRole="button" style={styles.delete}>
             <Text style={[styles.deleteText, { color: theme.danger }]}>
               {isCategory ? 'Supprimer la catégorie' : 'Supprimer ce pictogramme'}
             </Text>

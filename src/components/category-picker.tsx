@@ -25,6 +25,7 @@ export function CategoryPicker({ value, onChange }: Props) {
     <View style={[styles.box, { borderColor: theme.border, backgroundColor: theme.surface }]}>
       <Pressable
         onPress={() => setOpen((o) => !o)}
+        testID="category-picker"
         accessibilityRole="button"
         accessibilityLabel={`Catégorie : ${current?.path ?? ''}`}
         accessibilityHint={open ? 'Fermer la liste' : 'Changer de catégorie'}
@@ -43,6 +44,7 @@ export function CategoryPicker({ value, onChange }: Props) {
             return (
               <Pressable
                 key={o.id}
+                testID={`category-option-${o.id}`}
                 onPress={() => {
                   onChange(o.id);
                   setOpen(false);

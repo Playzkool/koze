@@ -1,0 +1,37 @@
+appId: host.exp.Exponent
+---
+# Reusable subflow: in caregiver mode, adds a text-only tile to the current board.
+# Text-only tiles need no network, which keeps the flows deterministic.
+# Params: LABEL (required), SPEECH (optional), ADD_ID (add-tile or add-category).
+# Keep values ASCII: inputText is unreliable with accents on some simulators.
+- scrollUntilVisible:
+    element:
+      id: "${typeof ADD_ID !== 'undefined' ? ADD_ID : 'add-tile'}"
+    direction: DOWN
+- tapOn:
+    id: "${typeof ADD_ID !== 'undefined' ? ADD_ID : 'add-tile'}"
+- tapOn:
+    id: 'tile-label-input'
+- inputText: ${LABEL}
+- runFlow:
+    when:
+      true: ${typeof SPEECH !== 'undefined'}
+    commands:
+      - tapOn:
+          id: 'tile-speech-input'
+      - inputText: ${SPEECH}
+- hideKeyboard
+- tapOn:
+    id: 'source-text'
+- tapOn:
+    id: 'color-2'
+- scrollUntilVisible:
+    element:
+      id: 'tile-save'
+    direction: DOWN
+- tapOn:
+    id: 'tile-save'
+- extendedWaitUntil:
+    visible:
+      id: 'board-title'
+    timeout: 10000
