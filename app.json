@@ -9,7 +9,7 @@
     "scheme": "koze",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.koze.app",
+      "bundleIdentifier": "com.playzkool.koze",
       "buildNumber": "1",
       "supportsTablet": true,
       "infoPlist": {
@@ -20,7 +20,7 @@
       }
     },
     "android": {
-      "package": "com.koze.app",
+      "package": "com.playzkool.koze",
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#1F6FEB",
