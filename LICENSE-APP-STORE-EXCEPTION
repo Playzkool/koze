@@ -1,0 +1,47 @@
+Kozé — Additional permission under GNU GPL version 3 section 7
+================================================================
+
+Copyright (C) 2026 Sébastien Terrebonne
+
+Kozé is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License version 3 (see the LICENSE file),
+with the following additional permission.
+
+App Store / Distribution Platform Exception
+-------------------------------------------
+
+As an additional permission under section 7 of the GNU General Public
+License version 3, you may convey covered works in object code form through
+an application store or distribution platform (including, without
+limitation, the Apple App Store and Google Play), even if the terms of
+service, usage rules, or technical restrictions (such as digital rights
+management or code signing) of that platform impose restrictions on
+recipients that would otherwise be incompatible with the GNU General Public
+License, provided that all of the following conditions are met:
+
+  1. The Corresponding Source of the work as conveyed is made available,
+     at no charge, under the terms of the GNU General Public License
+     version 3 together with this additional permission, from a publicly
+     accessible location (for example, a public source code repository).
+
+  2. That location is referenced either in the application's store listing
+     or from within the application itself.
+
+  3. You do not impose on recipients any restriction beyond those required
+     by the platform itself.
+
+This permission applies only to the restrictions imposed by such platforms.
+It does not otherwise limit or alter the rights and obligations granted by
+the GNU General Public License.
+
+If you modify this work, you may extend this additional permission to your
+version of the work, but you are not obligated to do so. If you do not wish
+to do so, delete this additional permission statement from your version.
+
+Third-party material
+--------------------
+
+This exception covers the source code of Kozé only. ARASAAC pictograms
+(Sergio Palao, property of the Government of Aragón, https://arasaac.org)
+are not covered by the GNU GPL nor by this exception; they remain under the
+Creative Commons BY-NC-SA licence.
