@@ -55,7 +55,8 @@
     "test:unit": "tsx --tsconfig tsconfig.json --test \"src/**/*.test.ts\"",
     "test:e2e": "sh .maestro/run.sh",
     "typecheck": "tsc --noEmit",
-    "pictos:bundle": "node scripts/bundle-default-pictos.mjs"
+    "pictos:bundle": "node scripts/bundle-default-pictos.mjs",
+    "icons:render": "node scripts/render-icons.mjs"
   },
   "private": true
 }
