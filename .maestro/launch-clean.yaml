@@ -1,0 +1,43 @@
+appId: host.exp.Exponent
+---
+# Reusable subflow: opens Kozé in Expo Go with empty storage (default boards).
+# Requires Metro running (npx expo start). Override the URL with -e METRO_URL=...
+# (a flow-level `env:` block would take precedence over -e, hence the JS default).
+- launchApp:
+    clearState: true
+- openLink: "${typeof METRO_URL !== 'undefined' ? METRO_URL : 'exp://127.0.0.1:8081'}"
+# clearState brings back Expo Go's first-launch developer menu over the app.
+- extendedWaitUntil:
+    visible:
+      text: 'Continue'
+    timeout: 120000
+- tapOn:
+    text: 'Continue'
+# The floating "Tools button" sits over the top right of the app (right on the
+# backspace button) and steals taps: switch it off. Its row is below the fold.
+- scrollUntilVisible:
+    element:
+      text: 'Tools button'
+    direction: DOWN
+    centerElement: true
+# Two elements carry the switch value: the whole row (wide) and the switch itself
+# (index 1). Tapping the row does nothing.
+- tapOn:
+    text: '1'
+    rightOf:
+      text: 'Tools button'
+    index: 1
+- assertVisible:
+    text: '0'
+    rightOf:
+      text: 'Tools button'
+- scrollUntilVisible:
+    element:
+      id: 'xmark'
+    direction: UP
+- tapOn:
+    id: 'xmark'
+- extendedWaitUntil:
+    visible:
+      id: 'board-title'
+    timeout: 30000

@@ -1,0 +1,70 @@
+appId: host.exp.Exponent
+tags:
+  - offline
+---
+# Caregiver mode: create a category, add a tile in it, move that tile to the
+# home board with the category picker, then delete the (now empty) category.
+- runFlow: launch-clean.yaml
+- runFlow: enter-caregiver.yaml
+- runFlow:
+    file: create-text-tile.yaml
+    env:
+      ADD_ID: 'add-category'
+      LABEL: 'Repas'
+- scrollUntilVisible:
+    element:
+      text: 'Catégorie Repas'
+    direction: DOWN
+- tapOn:
+    text: 'Catégorie Repas'
+- assertVisible:
+    id: 'board-title'
+    text: 'Repas'
+- runFlow:
+    file: create-text-tile.yaml
+    env:
+      LABEL: 'Pain'
+- assertVisible:
+    text: 'Pain'
+# Move "Pain" to the home board.
+- tapOn:
+    text: 'Modifier Pain'
+- scrollUntilVisible:
+    element:
+      id: 'category-picker'
+    direction: DOWN
+- tapOn:
+    id: 'category-picker'
+- tapOn:
+    id: 'category-option-home'
+- scrollUntilVisible:
+    element:
+      id: 'tile-save'
+    direction: DOWN
+- tapOn:
+    id: 'tile-save'
+- assertNotVisible:
+    text: 'Pain'
+- tapOn:
+    id: 'board-back'
+- scrollUntilVisible:
+    element:
+      text: 'Pain'
+    direction: DOWN
+# Delete the empty category.
+- tapOn:
+    text: 'Modifier Repas'
+- scrollUntilVisible:
+    element:
+      id: 'tile-delete'
+    direction: DOWN
+- tapOn:
+    id: 'tile-delete'
+- assertVisible:
+    text: '.*Repas.*sera supprimée.*'
+- tapOn:
+    text: 'Supprimer'
+- assertNotVisible:
+    text: 'Catégorie Repas'
+- assertVisible:
+    text: 'Pain'

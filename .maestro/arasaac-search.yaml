@@ -1,0 +1,40 @@
+appId: host.exp.Exponent
+tags:
+  - network
+---
+# Caregiver mode: add a tile from the ARASAAC search. Needs internet access to
+# api.arasaac.org; excluded from offline runs (--exclude-tags network).
+- runFlow: launch-clean.yaml
+- runFlow: enter-caregiver.yaml
+- scrollUntilVisible:
+    element:
+      id: 'add-tile'
+    direction: DOWN
+- tapOn:
+    id: 'add-tile'
+- tapOn:
+    id: 'picto-search-input'
+- inputText: 'piscine'
+# hideKeyboard fails on this field; Enter submits the search and closes the keyboard.
+- pressKey: Enter
+- extendedWaitUntil:
+    visible:
+      id: 'picto-result-.*'
+    timeout: 20000
+- tapOn:
+    id: 'picto-result-.*'
+    index: 0
+# Selecting a pictogram fills the empty label with its keyword.
+- assertVisible:
+    id: 'tile-label-input'
+    text: '(?i).*piscine.*'
+- scrollUntilVisible:
+    element:
+      id: 'tile-save'
+    direction: DOWN
+- tapOn:
+    id: 'tile-save'
+- scrollUntilVisible:
+    element:
+      text: '(?i).*piscine.*'
+    direction: DOWN

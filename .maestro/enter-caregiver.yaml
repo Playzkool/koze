@@ -1,0 +1,9 @@
+appId: host.exp.Exponent
+---
+# Reusable subflow: enters the caregiver mode (1 s hold on the gear button).
+- longPressOn:
+    id: 'caregiver-toggle'
+- extendedWaitUntil:
+    visible:
+      id: 'caregiver-done'
+    timeout: 10000

@@ -1,0 +1,60 @@
+appId: host.exp.Exponent
+tags:
+  - offline
+---
+# User mode: build a sentence, edit it, browse a category. No network needed:
+# ARASAAC images may fail to load, the flow only relies on testIDs and labels.
+- runFlow: launch-clean.yaml
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Phrase vide'
+- tapOn:
+    id: 'tile-je'
+- tapOn:
+    id: 'tile-veux'
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Dire : je je veux'
+- tapOn:
+    id: 'backspace-button'
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Dire : je'
+# Long press on backspace clears the whole sentence.
+- longPressOn:
+    id: 'backspace-button'
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Phrase vide'
+# Categories open in place; the back button returns to the home board.
+- scrollUntilVisible:
+    element:
+      id: 'tile-f-besoins'
+    direction: DOWN
+- tapOn:
+    id: 'tile-f-besoins'
+- assertVisible:
+    id: 'board-title'
+    text: 'Besoins'
+- tapOn:
+    id: 'tile-boire'
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Dire : boire'
+- tapOn:
+    id: 'board-back'
+- assertVisible:
+    id: 'board-title'
+    text: 'Accueil'
+# Caregiver tools must never show in user mode.
+- assertNotVisible:
+    id: 'add-tile'
+- assertNotVisible:
+    id: 'open-settings'
+# A short tap on the gear only shows the hint, it does not enter the caregiver mode.
+- tapOn:
+    id: 'caregiver-toggle'
+- assertVisible:
+    text: 'Maintenez appuyé 1 seconde pour le mode aidant'
+- assertNotVisible:
+    id: 'caregiver-done'

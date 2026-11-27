@@ -49,6 +49,7 @@ export function CaregiverToggle({ active, onChange }: Props) {
     return (
       <Pressable
         onPress={() => onChange(false)}
+        testID="caregiver-done"
         accessibilityRole="button"
         accessibilityLabel="Quitter le mode aidant"
         style={[styles.button, { backgroundColor: theme.accent, borderColor: theme.accent }]}>
@@ -71,6 +72,7 @@ export function CaregiverToggle({ active, onChange }: Props) {
           onChange(true);
         }}
         delayLongPress={HOLD_MS}
+        testID="caregiver-toggle"
         accessibilityRole="button"
         accessibilityLabel="Mode aidant"
         accessibilityHint="Maintenir appuyé une seconde pour activer"

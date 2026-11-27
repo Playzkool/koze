@@ -1,0 +1,38 @@
+appId: host.exp.Exponent
+tags:
+  - offline
+---
+# Caregiver mode: "Réinitialiser les tableaux" removes custom tiles.
+- runFlow: launch-clean.yaml
+- runFlow: enter-caregiver.yaml
+- runFlow:
+    file: create-text-tile.yaml
+    env:
+      LABEL: 'A effacer'
+- scrollUntilVisible:
+    element:
+      id: 'open-settings'
+    direction: DOWN
+- tapOn:
+    id: 'open-settings'
+- assertVisible:
+    id: 'export-backup'
+- scrollUntilVisible:
+    element:
+      id: 'reset-boards'
+    direction: DOWN
+- tapOn:
+    id: 'reset-boards'
+# The section title reads "Réinitialiser" too (and sits lower on screen): target
+# the alert button, the one next to "Annuler".
+- tapOn:
+    text: 'Réinitialiser'
+    rightOf:
+      text: 'Annuler'
+- tapOn:
+    id: 'BackButton'
+- assertVisible:
+    id: 'board-title'
+    text: 'Accueil'
+- assertNotVisible:
+    text: 'A effacer'

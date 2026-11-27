@@ -23,6 +23,7 @@ export function PictoTile({ tile, size, onPress, onEdit }: Props) {
     <View style={{ width: size, height: size + 28 }}>
       <Pressable
         onPress={onPress}
+        testID={`tile-${tile.id}`}
         accessibilityRole="button"
         accessibilityLabel={isFolder ? `Catégorie ${tile.label}` : tile.label}
         style={({ pressed }) => [
@@ -46,6 +47,7 @@ export function PictoTile({ tile, size, onPress, onEdit }: Props) {
       {onEdit && (
         <Pressable
           onPress={onEdit}
+          testID={`tile-edit-${tile.id}`}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={`Modifier ${tile.label}`}

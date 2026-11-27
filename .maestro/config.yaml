@@ -1,0 +1,7 @@
+# What `maestro test .maestro/` runs. The other files are subflows.
+flows:
+  - communication.yaml
+  - custom-tile.yaml
+  - category.yaml
+  - reset.yaml
+  - arasaac-search.yaml

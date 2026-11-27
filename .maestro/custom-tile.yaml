@@ -1,0 +1,37 @@
+appId: host.exp.Exponent
+tags:
+  - offline
+---
+# Caregiver mode: create a text-only tile with a spoken sentence, use it, and
+# check it survives an app restart (on-device storage).
+- runFlow: launch-clean.yaml
+- runFlow: enter-caregiver.yaml
+- runFlow:
+    file: create-text-tile.yaml
+    env:
+      LABEL: 'Ma maison'
+      SPEECH: 'Je veux rentrer a la maison'
+- scrollUntilVisible:
+    element:
+      text: 'Ma maison'
+    direction: DOWN
+- tapOn:
+    id: 'caregiver-done'
+- tapOn:
+    text: 'Ma maison'
+# The spoken sentence, not the label, goes into the sentence bar.
+- assertVisible:
+    id: 'sentence-bar'
+    text: 'Dire : Je veux rentrer a la maison'
+# Persistence: restart Expo Go without clearing its state.
+- stopApp
+- launchApp
+- openLink: "${typeof METRO_URL !== 'undefined' ? METRO_URL : 'exp://127.0.0.1:8081'}"
+- extendedWaitUntil:
+    visible:
+      id: 'board-title'
+    timeout: 120000
+- scrollUntilVisible:
+    element:
+      text: 'Ma maison'
+    direction: DOWN

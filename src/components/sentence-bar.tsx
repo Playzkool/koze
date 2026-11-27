@@ -22,6 +22,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
       <Pressable
         onPress={onSpeak}
         disabled={empty}
+        testID="sentence-bar"
         accessibilityRole="button"
         accessibilityLabel={empty ? 'Phrase vide' : `Dire : ${words.map((w) => w.speech || w.label).join(' ')}`}
         style={styles.sentence}>
@@ -50,6 +51,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
           onPress={onSpeak}
           disabled={empty}
           accessibilityRole="button"
+          testID="speak-button"
           accessibilityLabel="Parler"
           style={[styles.action, { backgroundColor: theme.accent, opacity: empty ? 0.4 : 1 }]}>
           <Icon name="speak" color={theme.accentText} />
@@ -59,6 +61,7 @@ export function SentenceBar({ words, onSpeak, onBackspace, onClear }: Props) {
           onLongPress={onClear}
           disabled={empty}
           accessibilityRole="button"
+          testID="backspace-button"
           accessibilityLabel="Effacer le dernier mot"
           accessibilityHint="Appui long pour tout effacer"
           style={[styles.action, { borderColor: theme.border, borderWidth: 2, opacity: empty ? 0.4 : 1 }]}>
