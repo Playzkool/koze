@@ -1,9 +1,14 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { useEffect } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { startPictoSync } from '@/utils/picto-store';
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  // Keeps every pictogram used on a board available offline.
+  useEffect(() => startPictoSync(), []);
   return (
     // Required by react-native-sortables (tile reordering).
     <GestureHandlerRootView style={styles.root}>

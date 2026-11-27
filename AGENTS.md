@@ -46,6 +46,8 @@ Kozé is a free AAC (communication alternative et augmentée) app: pictogram boa
 
 - **Free forever, no backend**: no account, no ads, no analytics, no IAP. All user data stays on device (`expo-sqlite/kv-store`, see `src/store/boards.ts`).
 - **Pictograms**: ARASAAC public API (`src/utils/arasaac.ts`), CC BY-NC-SA. Attribution must stay visible in the About screen. Never use them commercially.
+- **Offline pictograms**: the default vocabulary is bundled (`assets/pictos/`, `src/data/default-pictos.ts`); after editing `src/data/default-boards.ts`, run `npm run pictos:bundle`. Other pictograms used on boards are downloaded to Documents by `src/utils/picto-store.ts`. Render pictograms with `pictoSource(id)`, never the raw ARASAAC URL (the expo-image cache is purged by the OS).
+- **Privacy policy**: `docs/confidentialite.html` (GitHub Pages). Update it whenever the app gains a network call, a permission or a third-party service.
 - **Accessibility first**: touch targets ≥ 64pt (`MinTouch`), high contrast, every pressable has `accessibilityLabel`. Board navigation is local state, not routes — instant, no animation.
 - **Language**: UI and default vocabulary in French.
 - **Navigation**: never wrap a component with a style array in `<Link asChild>` (Expo Router's Slot throws). Use `Pressable` + `router.push` instead.

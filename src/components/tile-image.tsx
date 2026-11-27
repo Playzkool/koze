@@ -3,8 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Fonts } from '@/constants/theme';
 import type { TileImage as TileImageData } from '@/store/boards';
-import { pictoUrl } from '@/utils/arasaac';
 import { photoUri } from '@/utils/photo';
+import { pictoSource } from '@/utils/picto-store';
 
 /** Background colors for text-only tiles. All pass WCAG AA with near-black text. */
 export const TEXT_TILE_COLORS = ['#FFE08A', '#A8E6CF', '#B5D8FF', '#FFC2C2', '#E0C3FC', '#FFFFFF'] as const;
@@ -35,7 +35,7 @@ export function TileImage({ image, label, previewUri, radius = 10, textSize = 22
     );
   }
 
-  const source = previewUri ?? (image.kind === 'photo' ? photoUri(image.file) : pictoUrl(image.id));
+  const source = previewUri ?? (image.kind === 'photo' ? photoUri(image.file) : pictoSource(image.id));
   const isPhoto = image.kind === 'photo' || !!previewUri;
 
   return (
