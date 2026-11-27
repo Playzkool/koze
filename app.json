@@ -43,7 +43,15 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Kozé accède à vos photos pour créer des pictogrammes personnalisés. Les photos restent sur cet appareil.",
+          "cameraPermission": "Kozé utilise l'appareil photo pour créer des pictogrammes personnalisés. Les photos restent sur cet appareil.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

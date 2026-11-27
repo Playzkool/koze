@@ -7,7 +7,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="add" options={{ presentation: 'modal', title: 'Ajouter un pictogramme' }} />
+        <Stack.Screen name="tile" options={{ presentation: 'modal', title: 'Pictogramme' }} />
         <Stack.Screen name="about" options={{ title: 'À propos' }} />
       </Stack>
     </ThemeProvider>
