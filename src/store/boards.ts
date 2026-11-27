@@ -94,7 +94,8 @@ function commit(next: Boards) {
   listeners.forEach((l) => l());
 }
 
-function subscribe(listener: () => void) {
+/** Subscribe to any board change. Returns an unsubscribe function. */
+export function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }

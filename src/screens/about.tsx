@@ -10,6 +10,7 @@ import { applyBackup, BackupError, exportBackup, pickBackup } from '@/utils/back
 
 /** Required by LICENSE-APP-STORE-EXCEPTION (condition 2): keep this link in the app. */
 const SOURCE_URL = 'https://github.com/Playzkool/koze';
+const PRIVACY_URL = 'https://playzkool.github.io/koze/confidentialite.html';
 
 function errorMessage(e: unknown) {
   return e instanceof BackupError ? e.message : 'Une erreur inattendue est survenue.';
@@ -127,6 +128,15 @@ export function About() {
       </Text>
       <Pressable onPress={() => Linking.openURL(SOURCE_URL)} accessibilityRole="link">
         <Text style={[styles.link, { color: theme.accent }]}>github.com/Playzkool/koze</Text>
+      </Pressable>
+
+      <Text style={[styles.h2, { color: theme.text }]}>Confidentialité</Text>
+      <Text style={p}>
+        Aucun compte, aucune publicité, aucun suivi. Kozé se connecte à internet seulement pour
+        chercher des pictogrammes et vérifier les mises à jour.
+      </Text>
+      <Pressable onPress={() => Linking.openURL(PRIVACY_URL)} accessibilityRole="link" testID="privacy-link">
+        <Text style={[styles.link, { color: theme.accent }]}>Politique de confidentialité</Text>
       </Pressable>
 
       <Text style={[styles.h2, { color: theme.text }]}>Réinitialiser</Text>
